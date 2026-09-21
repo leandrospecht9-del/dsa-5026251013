@@ -1,11 +1,10 @@
 package lw01.unguided;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         
-        (Scanner scanner = new Scanner(Main.class.getResourceAsStream("/jobs.txt"))) {
+        Scanner scanner = new Scanner(Main.class.getResourceAsStream("/jobs.txt")); 
                 int n = scanner.nextInt();
                 String[] ids = new String[n];
                 Rental[] rentals = new Rental[n];
@@ -25,12 +24,10 @@ public class Main {
                     }
 
                 }
-                scanner.close();
-                for (Rental rental : rentals) {
-                System.out.println(rental.summary());
             
+        for (Rental rental : rentals) {
+            System.out.println(rental.summary());
         }
-
     }
 }
 
