@@ -10,7 +10,7 @@ public class Main {
         List<PrintJob> printJobs = new ArrayList<>();
 
         try {
-            Scanner scanner = new Scanner(new File("jobs.txt"));
+            Scanner scanner = new Scanner(new File("src/lw01/prelab/jobs.txt"));
             while (scanner.hasNext()) {
                 String type = scanner.next();
                 String id = scanner.next();
