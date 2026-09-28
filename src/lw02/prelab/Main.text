@@ -1,0 +1,106 @@
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+import java.util.Stack;
+
+public class Main {
+    public static void main(String[] args) {
+        
+        // 1. Membaca file transactions.txt dan menyimpannya ke LinkedList
+        LinkedList<String[]> daftarTransaksi = new LinkedList<>();
+        Scanner baca = new Scanner(Main.class.getResourceAsStream("/transactions.txt"));
+
+        while (baca.hasNextLine()) {
+            String baris = baca.nextLine().trim();
+            if (baris.isEmpty()) {
+                continue;
+            }
+            // Memecah baris berdasarkan spasi: <NAME> <TYPE> <AMOUNT>
+            String[] data = baris.split(" ");
+            daftarTransaksi.add(data);
+        }
+        baca.close();
+
+        // 2. Membuat daftar customer unik dengan saldo awal "0"
+        LinkedList<String[]> daftarCustomer = new LinkedList<>();
+
+        for (String[] transaksi : daftarTransaksi) {
+            String nama = transaksi[0];
+            boolean sudahAda = false;
+
+            for (String[] customer : daftarCustomer) {
+                if (customer[0].equals(nama)) {
+                    sudahAda = true;
+                    break;
+                }
+            }
+
+            // Jika customer belum ada di list, tambahkan dengan saldo 0
+            if (!sudahAda) {
+                String[] customerBaru = new String[2];
+                customerBaru[0] = nama;
+                customerBaru[1] = "0";
+                daftarCustomer.add(customerBaru);
+            }
+        }
+
+        // 3. Memindahkan transaksi ke Queue untuk diproses secara FIFO (First In First Out)
+        Queue<String[]> antrian = new LinkedList<>();
+        for (String[] transaksi : daftarTransaksi) {
+            antrian.offer(transaksi);
+        }
+
+        // 4. Menyiapkan Stack untuk mencatat transaksi WITHDRAW yang gagal
+        Stack<String[]> gagal = new Stack<>();
+
+        // Memproses transaksi satu per satu dari antrian Queue
+        while (!antrian.isEmpty()) {
+            String[] transaksi = antrian.poll(); // Ambil dari depan antrian
+            String nama = transaksi[0];
+            String jenis = transaksi[1];
+            int jumlah = Integer.parseInt(transaksi[2]);
+
+            // Mencari data customer yang sesuai
+            String[] customer = null;
+            for (String[] c : daftarCustomer) {
+                if (c[0].equals(nama)) {
+                    customer = c;
+                    break;
+                }
+            }
+
+            if (customer != null) {
+                int saldo = Integer.parseInt(customer[1]);
+
+                if (jenis.equals("DEPOSIT")) {
+                    // Jika deposit, saldo bertambah
+                    saldo += jumlah;
+                    customer[1] = String.valueOf(saldo);
+                } else if (jenis.equals("WITHDRAW")) {
+                    // Jika withdraw, cek apakah saldo mencukupi
+                    if (jumlah > saldo) {
+                        // Saldo kurang, masukkan ke Stack gagal
+                        gagal.push(transaksi);
+                    } else {
+                        saldo -= jumlah;
+                        customer[1] = String.valueOf(saldo);
+                    }
+                }
+            }
+        }
+
+        // 5. Menampilkan hasil akhir saldo setiap customer
+        System.out.println("=== Final Balances ===");
+        for (String[] customer : daftarCustomer) {
+            System.out.println(customer[0] + ": " + customer[1]);
+        }
+
+        // Menampilkan daftar transaksi gagal dari Stack (LIFO)
+        System.out.println();
+        System.out.println("=== Failed Transactions ===");
+        while (!gagal.isEmpty()) {
+            String[] t = gagal.pop(); // Ambil dari atas Stack
+            System.out.println(t[0] + " " + t[1] + " " + t[2]);
+        }
+    }
+}
