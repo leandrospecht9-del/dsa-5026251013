@@ -4,17 +4,17 @@ import java.util.Scanner;
 
 public class timeTrav {
     static void insertion(int[] a, int passes) {
-    for (int i = 1; i <= passes; i++) {
-        int key = a[i];
-        int j = i - 1;
+        for (int i = 1; i <= passes; i++) {
+            int key = a[i];
+            int j = i - 1;
 
-        while (j >= 0 && a[j] < key) {
-            a[j + 1] = a[j];
-            j--;
+            while (j >= 0 && a[j] < key) {
+                a[j + 1] = a[j];
+                j--;
+            }
+            a[j + 1] = key;
         }
-        a[j + 1] = key;
     }
-}
 
     static int linearSearch(int[] a, int target) {
         for (int i = 0; i < a.length; i++) {
@@ -39,7 +39,7 @@ public class timeTrav {
         for (int i = 0; i < m; i++) {
             shoot[i] = sc.nextInt();
         }
-
+        sc.close();
         insertion(branches, 3);
 
         for (int k = 0; k < n; k++) {
